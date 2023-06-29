@@ -31,9 +31,41 @@ const userRegistration=async(req,res)=>{
     }
 }
 
+const userLogin=async(req,res)=>{
+    const {userEmail,userPassword}=req.body
+    try {
+        const userdata=await User.findOne({userEmail:userEmail})
+        if(userdata!=null){
+        const isMatch=await bycrpt.compare(userPassword,userdata.userPassword)
+        if(userdata.userEmail=== userEmail&&isMatch){
+            return res.status(201).json({
+                success:"success",
+                message:"login successfully",
+                userData:userdata
+            })
+        }else{
+            return res.status(403).json({
+                success:"failure",
+                message:"Email password is not match"
+            })
+        }
+        }else{
+            return res.status(403).json({
+                success:"success",
+                message:"User not found"
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success:"failure",
+            message:error.message
+        })
+    }
+}
 
 
 
 module.exports={
-    userRegistration
+    userRegistration,
+    userLogin
 }
